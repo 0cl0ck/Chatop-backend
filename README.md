@@ -22,7 +22,7 @@ Application de mise en relation entre locataires et propriétaires.
 1. Cloner le repository
 
 ```
-git clone <votre-url-github>
+git clone https://github.com/0cl0ck/Chatop-backend
 ```
 
 2. Configurer la base de données
