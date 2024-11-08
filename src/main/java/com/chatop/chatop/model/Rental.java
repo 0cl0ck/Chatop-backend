@@ -10,7 +10,7 @@ import java.util.Date;
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
     private String name;
     private Integer surface;
@@ -19,7 +19,7 @@ public class Rental {
     private String description;
     
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
     
     @CreationTimestamp
@@ -31,8 +31,8 @@ public class Rental {
     private Date updatedAt;
 
     // Getters et Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
