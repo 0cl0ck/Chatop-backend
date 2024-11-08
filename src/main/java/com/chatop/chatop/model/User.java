@@ -91,4 +91,12 @@ public class User implements UserDetails {
     public String getEmail() {
         return email;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }
