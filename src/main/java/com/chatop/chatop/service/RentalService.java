@@ -1,29 +1,29 @@
 package com.chatop.chatop.service;
 
 import com.chatop.chatop.dtos.CreateRentalDto;
-import com.chatop.chatop.dtos.RentalDto;
 import com.chatop.chatop.model.Rental;
 import com.chatop.chatop.model.User;
 import com.chatop.chatop.repository.RentalRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RentalService {
     private final RentalRepository rentalRepository;
+    private final FileStorageService fileStorageService;
+    
+    @Value("${app.base-url}")
+    private String baseUrl;
 
-    public RentalService(RentalRepository rentalRepository) {
+    public RentalService(RentalRepository rentalRepository, FileStorageService fileStorageService) {
         this.rentalRepository = rentalRepository;
+        this.fileStorageService = fileStorageService;
     }
 
-    public List<RentalDto> getAllRentals() {
-        return rentalRepository.findAll().stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
-    }
-
-    public Rental createRental(CreateRentalDto dto, User owner) {
+    public Rental createRental(CreateRentalDto dto, User owner) throws IOException {
         Rental rental = new Rental();
         rental.setName(dto.getName());
         rental.setSurface(dto.getSurface());
@@ -31,23 +31,18 @@ public class RentalService {
         rental.setDescription(dto.getDescription());
         rental.setOwner(owner);
         
-        // TODO: Gérer l'upload de l'image
-        rental.setPicture("default_picture_url");
+        // Gérer l'upload de l'image
+        if (dto.getPicture() != null && !dto.getPicture().isEmpty()) {
+            String fileName = fileStorageService.storeFile(dto.getPicture());
+            rental.setPicture(baseUrl + "/api/images/" + fileName);
+        } else {
+            rental.setPicture(baseUrl + "/api/images/default.jpg");
+        }
         
         return rentalRepository.save(rental);
     }
 
-    private RentalDto convertToDto(Rental rental) {
-        RentalDto dto = new RentalDto();
-        dto.setId(rental.getId());
-        dto.setName(rental.getName());
-        dto.setSurface(rental.getSurface());
-        dto.setPrice(rental.getPrice());
-        dto.setPicture(rental.getPicture());
-        dto.setDescription(rental.getDescription());
-        dto.setOwner_id(rental.getOwner().getId());
-        dto.setCreated_at(rental.getCreatedAt());
-        dto.setUpdated_at(rental.getUpdatedAt());
-        return dto;
+    public List<Rental> getAllRentals() throws IOException {
+        return rentalRepository.findAll();
     }
 }

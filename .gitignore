@@ -35,3 +35,7 @@ build/
 # Application properties
 src/main/resources/application.properties
 .env
+
+# Uploads
+uploads/
+src/main/resources/images/
