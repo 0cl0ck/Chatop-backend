@@ -1,7 +1,6 @@
 package com.chatop.chatop.dtos;
 
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.validation.constraints.NotNull;
 
 public class UpdateRentalDto {
     private String name;

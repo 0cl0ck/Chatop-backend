@@ -2,7 +2,7 @@ package com.chatop.chatop.controller;
 
 import com.chatop.chatop.dtos.CreateRentalDto;
 import com.chatop.chatop.dtos.UpdateRentalDto;
-import com.chatop.chatop.model.Rental;
+import com.chatop.chatop.dtos.RentalDto;
 import com.chatop.chatop.model.User;
 import com.chatop.chatop.service.RentalService;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.chatop.chatop.model.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +32,8 @@ public class RentalController {
     @GetMapping
     public ResponseEntity<?> getAllRentals() {
         try {
-            //List<RentalDto> rentals = rentalService.getAllRentals();
-            List<Rental> rentals = rentalService.getAllRentals();
-
-            Map<String, List<Rental>> response = new HashMap<>();
+            List<RentalDto> rentals = rentalService.getAllRentals();
+            Map<String, List<RentalDto>> response = new HashMap<>();
             response.put("rentals", rentals);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -57,9 +54,8 @@ public class RentalController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> updateRental(
-            @PathVariable Long id,
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, String>> updateRental(@PathVariable Integer id,
             @ModelAttribute UpdateRentalDto rentalDto,
             Authentication authentication) throws IOException {
         
@@ -72,5 +68,15 @@ public class RentalController {
         response.put("message", "Rental updated !");
         
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRental(@PathVariable Integer id) {
+        try {
+            RentalDto rental = rentalService.getRentalById(id);
+            return ResponseEntity.ok(rental);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

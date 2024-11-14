@@ -1,13 +1,14 @@
 package com.chatop.chatop.service;
 
 import com.chatop.chatop.dtos.CreateRentalDto;
+import com.chatop.chatop.dtos.RentalDto;
 import com.chatop.chatop.dtos.UpdateRentalDto;
 import com.chatop.chatop.model.Rental;
 import com.chatop.chatop.model.User;
 import com.chatop.chatop.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,11 +45,26 @@ public class RentalService {
         return rentalRepository.save(rental);
     }
 
-    public List<Rental> getAllRentals() throws IOException {
-        return rentalRepository.findAll();
+    public List<RentalDto> getAllRentals() throws IOException {
+        List<Rental> rentals = rentalRepository.findAll();
+        return rentals.stream()
+            .map(rental -> {
+                RentalDto dto = new RentalDto();
+                dto.setId(rental.getId());
+                dto.setName(rental.getName());
+                dto.setSurface(rental.getSurface());
+                dto.setPrice(rental.getPrice());
+                dto.setPicture(rental.getPicture());
+                dto.setDescription(rental.getDescription());
+                dto.setOwner_id(rental.getOwner().getId());
+                dto.setCreated_at(rental.getCreatedAt());
+                dto.setUpdated_at(rental.getUpdatedAt());
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
 
-    public Rental updateRental(Long id, UpdateRentalDto dto, User currentUser) throws IOException {
+    public Rental updateRental(Integer id, UpdateRentalDto dto, User currentUser) throws IOException {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
                 
@@ -67,6 +83,26 @@ public class RentalService {
             rental.setPicture(baseUrl + "/api/images/" + fileName);
         }
         
+       
+        
         return rentalRepository.save(rental);
+    }
+
+    public RentalDto getRentalById(Integer id) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                
+        RentalDto dto = new RentalDto();
+        dto.setId(rental.getId());
+        dto.setName(rental.getName());
+        dto.setSurface(rental.getSurface());
+        dto.setPrice(rental.getPrice());
+        dto.setPicture(rental.getPicture());
+        dto.setDescription(rental.getDescription());
+        dto.setOwner_id(rental.getOwner().getId());
+        dto.setCreated_at(rental.getCreatedAt());
+        dto.setUpdated_at(rental.getUpdatedAt());
+        
+        return dto;
     }
 }
