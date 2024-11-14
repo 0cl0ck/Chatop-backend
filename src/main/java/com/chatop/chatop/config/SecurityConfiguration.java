@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/auth/me").authenticated()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/images/**").permitAll()
+                .requestMatchers("/api/rentals/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

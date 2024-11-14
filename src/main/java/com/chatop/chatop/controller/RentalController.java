@@ -1,7 +1,7 @@
 package com.chatop.chatop.controller;
 
 import com.chatop.chatop.dtos.CreateRentalDto;
-import com.chatop.chatop.dtos.RentalDto;
+import com.chatop.chatop.dtos.UpdateRentalDto;
 import com.chatop.chatop.model.Rental;
 import com.chatop.chatop.model.User;
 import com.chatop.chatop.service.RentalService;
@@ -16,11 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/rentals")
 @CrossOrigin
 public class RentalController {
+    private static final Logger logger = LoggerFactory.getLogger(RentalController.class);
     private final RentalService rentalService;
 
     public RentalController(RentalService rentalService) {
@@ -50,6 +53,23 @@ public class RentalController {
         
         Map<String, String> response = new HashMap<>();
         response.put("message", "Rental created !");
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> updateRental(
+            @PathVariable Long id,
+            @ModelAttribute UpdateRentalDto rentalDto,
+            Authentication authentication) throws IOException {
+        
+        User currentUser = (User) authentication.getPrincipal();
+        logger.info("Updating rental with id: {} by user: {}", id, currentUser.getEmail());
+        
+        rentalService.updateRental(id, rentalDto, currentUser);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Rental updated !");
         
         return ResponseEntity.ok(response);
     }
