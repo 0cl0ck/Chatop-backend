@@ -13,7 +13,7 @@ import com.chatop.chatop.dtos.UserDto;
 
 import java.util.List;
 
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @RestController
 public class UserController {
     private final UserService userService;
