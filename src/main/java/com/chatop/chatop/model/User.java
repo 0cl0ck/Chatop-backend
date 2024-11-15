@@ -98,4 +98,12 @@ public class User implements UserDetails {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
 }
