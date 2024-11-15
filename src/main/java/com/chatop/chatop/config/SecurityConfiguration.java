@@ -11,7 +11,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import java.util.Arrays;
-import org.springframework.http.HttpMethod;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -27,19 +26,20 @@ public class SecurityConfiguration {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(auth -> auth
+                // Routes publiques (sans authentification)
+                .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                // Routes Swagger (documentation uniquement)
+                .requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**", 
+                    "/swagger-ui.html"
+                ).permitAll()
+                // Toutes les autres routes nécessitent une authentification
+                .anyRequest().authenticated()
+            )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers("/api/auth/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/messages").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/messages/").authenticated()
-                .requestMatchers("/api/rentals/**").authenticated()
-                .requestMatchers("/api/users/**").authenticated()
-                .requestMatchers("/api/me").authenticated()
-                .requestMatchers("/api/images/**").permitAll()
-                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -49,9 +49,11 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Angular frontend
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

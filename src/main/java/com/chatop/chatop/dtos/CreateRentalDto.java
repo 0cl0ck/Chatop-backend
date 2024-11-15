@@ -1,12 +1,23 @@
 package com.chatop.chatop.dtos;
 
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "DTO pour la création d'une location")
 public class CreateRentalDto {
+    @Schema(description = "Nom de la location", example = "Appartement Paris 15")
     private String name;
+
+    @Schema(description = "Surface en m²", example = "75")
     private Integer surface;
+
+    @Schema(description = "Prix mensuel en euros", example = "1200")
     private Integer price;
+
+    @Schema(description = "Description de la location")
     private String description;
+
+    @Schema(description = "Photo de la location")
     private MultipartFile picture;
 
     // Constructeur par défaut

@@ -9,10 +9,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.chatop.chatop.model.User;
 import com.chatop.chatop.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag(name = "Messages", description = "API de gestion des messages")
 @RestController
 @RequestMapping("/api/messages")
 @CrossOrigin
@@ -25,9 +33,16 @@ public class MessageController {
         this.messageService = messageService;
     }
 
-    @PostMapping(value = {"", "/"})
+    @Operation(summary = "Envoyer un message")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Message envoyé", 
+            content = @Content(schema = @Schema(implementation = Map.class))),
+        @ApiResponse(responseCode = "400", description = "Données invalides"),
+        @ApiResponse(responseCode = "401", description = "Non authentifié")
+    })
+    @PostMapping
     public ResponseEntity<Map<String, String>> createMessage(
-            @RequestBody MessageDto messageDto,
+            @Parameter(description = "Contenu du message") @RequestBody MessageDto messageDto,
             Authentication authentication) {
         logger.info("=== Début de createMessage ===");
         logger.info("Authentication reçue: {}", authentication);
