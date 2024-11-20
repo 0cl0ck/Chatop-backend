@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
@@ -29,7 +29,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Operation(summary = "Obtenir les informations de l'utilisateur connecté")
+    @Operation(summary = "Obtenir les informations de l'utilisateur connecté",
+        security = { @SecurityRequirement(name = "bearerAuth") })
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Informations récupérées"),
         @ApiResponse(responseCode = "401", description = "Non authentifié")
@@ -42,14 +43,18 @@ public class UserController {
 
         return ResponseEntity.ok(currentUser);
     }
-
+    @Operation(
+        summary = "Obtenir la liste des utilisateurs",
+        security = { @SecurityRequirement(name = "bearerAuth") }
+    )
     @GetMapping("/users")
     public ResponseEntity<List<User>> allUsers() {
         List<User> users = userService.allUsers();
         return ResponseEntity.ok(users);
     }
 
-    @Operation(summary = "Obtenir les informations d'un utilisateur par son ID")
+    @Operation(summary = "Obtenir les informations d'un utilisateur par son ID",
+        security = { @SecurityRequirement(name = "bearerAuth") })
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Utilisateur trouvé"),
         @ApiResponse(responseCode = "404", description = "Utilisateur non trouvé")

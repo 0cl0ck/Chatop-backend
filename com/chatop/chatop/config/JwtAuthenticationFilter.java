@@ -66,8 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.info("Authentification définie dans le SecurityContext avec rôle USER");
-                    logger.info("Autorités de l'utilisateur: {}", authorities);
+                    logger.info("Authentification définie dans le SecurityContext avec rôle USER: {}", authorities);
                     
                     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                     logger.info("Autorités dans le SecurityContext: {}", auth.getAuthorities());

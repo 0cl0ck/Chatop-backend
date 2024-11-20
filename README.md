@@ -39,7 +39,7 @@ git clone https://github.com/0cl0ck/Chatop-backend
 
 ## Documentation API
 
-La documentation Swagger est disponible à l'adresse : `http://localhost:8005/swagger-ui.html`
+La documentation Swagger est disponible à l'adresse : `http://localhost:3001/swagger-ui.html`
 
 ## Structure du projet
 

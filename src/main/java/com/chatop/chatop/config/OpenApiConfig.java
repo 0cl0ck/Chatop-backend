@@ -5,7 +5,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.media.Schema;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,7 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class OpenApiConfig {
     
-    @Value("${server.port:8005}")
+    @Value("${server.port:3001}")
     private String serverPort;
     
     @Bean
@@ -69,9 +68,8 @@ public class OpenApiConfig {
                     .url("http://www.apache.org/licenses/LICENSE-2.0.html")))
             .components(new Components()
                 .addSecuritySchemes("bearerAuth", securityScheme)
-                .addSchemas("LoginRequest", loginRequestSchema)
-                .addSchemas("RegisterRequest", registerRequestSchema)
-                .addSchemas("MessageRequest", messageRequestSchema))
-            .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
+                .addSchemas("LoginUserDto", loginRequestSchema)
+                .addSchemas("RegisterUserDto", registerRequestSchema)
+                .addSchemas("MessageDto", messageRequestSchema));
     }
 }

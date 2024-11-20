@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
-
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,8 @@ public class RentalController {
         this.rentalService = rentalService;
     }
 
-    @Operation(summary = "Récupérer toutes les locations")
+    @Operation(summary = "Récupérer toutes les locations",
+        security = { @SecurityRequirement(name = "bearerAuth") })
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Liste des locations récupérée"),
         @ApiResponse(responseCode = "401", description = "Non authentifié")
@@ -52,7 +53,8 @@ public class RentalController {
         }
     }
 
-    @Operation(summary = "Créer une nouvelle location")
+    @Operation(summary = "Créer une nouvelle location",
+        security = { @SecurityRequirement(name = "bearerAuth") })
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Location créée"),
         @ApiResponse(responseCode = "400", description = "Données invalides"),
@@ -63,6 +65,9 @@ public class RentalController {
             @Parameter(description = "Données de la location")
             @ModelAttribute CreateRentalDto rentalDto,
             Authentication authentication) throws IOException {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         User currentUser = (User) authentication.getPrincipal();
         rentalService.createRental(rentalDto, currentUser);
         
@@ -72,7 +77,8 @@ public class RentalController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Mettre à jour une location")
+    @Operation(summary = "Mettre à jour une location",
+        security = { @SecurityRequirement(name = "bearerAuth") })
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Location mise à jour"),
         @ApiResponse(responseCode = "400", description = "Données invalides"),
@@ -86,6 +92,9 @@ public class RentalController {
             @Parameter(description = "Données de mise à jour") @ModelAttribute UpdateRentalDto rentalDto,
             Authentication authentication) throws IOException {
         
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         User currentUser = (User) authentication.getPrincipal();
         logger.info("Updating rental with id: {} by user: {}", id, currentUser.getEmail());
         
@@ -96,7 +105,10 @@ public class RentalController {
         
         return ResponseEntity.ok(response);
     }
-
+    @Operation(
+        summary = "Obtenir une location par son ID",
+        security = { @SecurityRequirement(name = "bearerAuth") }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<?> getRental(@PathVariable Integer id) {
         try {

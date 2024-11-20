@@ -18,8 +18,15 @@ public class RentalService {
     private final RentalRepository rentalRepository;
     private final FileStorageService fileStorageService;
     
-    @Value("${app.base-url}")
-    private String baseUrl;
+    @Value("${server.port:3001}")
+    private String serverPort;
+
+    private String generateImageUrl(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "default_picture_url";
+        }
+        return String.format("http://localhost:%s/api/images/proxy/%s", serverPort, fileName);
+    }
 
     public RentalService(RentalRepository rentalRepository, FileStorageService fileStorageService) {
         this.rentalRepository = rentalRepository;
@@ -34,12 +41,11 @@ public class RentalService {
         rental.setDescription(dto.getDescription());
         rental.setOwner(owner);
         
-        // Gérer l'upload de l'image
         if (dto.getPicture() != null && !dto.getPicture().isEmpty()) {
             String fileName = fileStorageService.storeFile(dto.getPicture());
-            rental.setPicture(baseUrl + "/api/images/" + fileName);
+            rental.setPicture(fileName);
         } else {
-            rental.setPicture(baseUrl + "/api/images/default.jpg");
+            rental.setPicture("default_picture_url");
         }
         
         return rentalRepository.save(rental);
@@ -54,7 +60,7 @@ public class RentalService {
                 dto.setName(rental.getName());
                 dto.setSurface(rental.getSurface());
                 dto.setPrice(rental.getPrice());
-                dto.setPicture(rental.getPicture());
+                dto.setPicture(generateImageUrl(rental.getPicture()));
                 dto.setDescription(rental.getDescription());
                 dto.setOwner_id(rental.getOwner().getId());
                 dto.setCreated_at(rental.getCreatedAt());
@@ -68,7 +74,6 @@ public class RentalService {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
                 
-        // Vérification que l'utilisateur est le propriétaire
         if (!rental.getOwner().getId().equals(currentUser.getId())) {
             throw new RuntimeException("Unauthorized");
         }
@@ -80,10 +85,8 @@ public class RentalService {
         
         if (dto.getPicture() != null && !dto.getPicture().isEmpty()) {
             String fileName = fileStorageService.storeFile(dto.getPicture());
-            rental.setPicture(baseUrl + "/api/images/" + fileName);
+            rental.setPicture(fileName);
         }
-        
-       
         
         return rentalRepository.save(rental);
     }
@@ -97,7 +100,7 @@ public class RentalService {
         dto.setName(rental.getName());
         dto.setSurface(rental.getSurface());
         dto.setPrice(rental.getPrice());
-        dto.setPicture(rental.getPicture());
+        dto.setPicture(generateImageUrl(rental.getPicture()));
         dto.setDescription(rental.getDescription());
         dto.setOwner_id(rental.getOwner().getId());
         dto.setCreated_at(rental.getCreatedAt());

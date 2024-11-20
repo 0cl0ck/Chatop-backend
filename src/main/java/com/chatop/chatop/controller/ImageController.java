@@ -25,26 +25,30 @@ public class ImageController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    @GetMapping("/{fileName:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String fileName) {
-        logger.info("Tentative d'accès au fichier : " + fileName);
+    @GetMapping("/proxy/{fileName:.+}")
+    public ResponseEntity<Resource> proxyImage(@PathVariable String fileName) {
         try {
             Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
-            logger.info("Chemin complet du fichier : " + filePath.toString());
             Resource resource = new UrlResource(filePath.toUri());
             
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .contentType(determineMediaType(fileName))
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=31536000")
                     .body(resource);
-            } else {
-                logger.error("Fichier non trouvé : " + fileName);
-                return ResponseEntity.notFound().build();
             }
+            return ResponseEntity.notFound().build();
         } catch (MalformedURLException e) {
-            logger.error("Erreur lors de la lecture du fichier : " + fileName, e);
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    private MediaType determineMediaType(String fileName) {
+        if (fileName.toLowerCase().endsWith(".webp")) {
+            return MediaType.parseMediaType("image/webp");
+        } else if (fileName.toLowerCase().endsWith(".png")) {
+            return MediaType.IMAGE_PNG;
+        }
+        return MediaType.IMAGE_JPEG;
     }
 }
