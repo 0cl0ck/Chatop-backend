@@ -1,6 +1,28 @@
+# Configuration de l'application
 spring.application.name=chatop
-app.jwtSecret=YOUR_JWT_SECRET
-app.jwtExpirationInMs=86400000
-spring.datasource.url=jdbc:mysql://localhost:3306/chatop
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+server.port=3001
+
+# Configuration JWT (unifié)
+security.jwt.secret-key=VOTRE_CLE_SECRETE_ICI
+security.jwt.expiration-time=86400000
+
+# Configuration de la base de données
+spring.datasource.url=jdbc:mysql://HOST:PORT/NOM_DE_LA_BASE?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+spring.datasource.username=USERNAME
+spring.datasource.password=PASSWORD
+
+# Configuration Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.open-in-view=false
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# Configuration des fichiers
+file.upload-dir=uploads/images
+app.base-url=http://localhost:3001
+
+# Configuration de l'encodage
+server.servlet.encoding.charset=UTF-8
+server.servlet.encoding.force=true
+logging.charset.console=UTF-8
+logging.charset.file=UTF-8
