@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(ImageController.class);
 
     @Value("${file.upload-dir}")
