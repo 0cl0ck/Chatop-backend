@@ -97,38 +97,16 @@ cd Chatop-backend
 
 2. Configurez les variables d'environnement :
 
-- Copiez le fichier `application.properties.example` vers `application.properties`
+- Copiez les fichiers d'exemple :
 
 ```bash
 cp src/main/resources/application.properties.example src/main/resources/application.properties
+cp .env.example .env
 ```
 
-3. Modifiez le fichier `application.properties` avec vos informations :
+Ensuite, Modifiez le fichier `.env` avec vos informations.
 
-```properties
-# Configuration serveur
-spring.application.name=chatop
-server.port=3001
-
-# Configuration JWT
-security.jwt.secret-key=VOTRE_CLE_SECRETE_ICI
-security.jwt.expiration-time=86400000
-
-# Configuration base de données
-spring.datasource.url=jdbc:mysql://localhost:3306/chatop?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-spring.datasource.username=VOTRE_USERNAME
-spring.datasource.password=VOTRE_PASSWORD
-
-# Configuration Hibernate
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-
-# Configuration des fichiers
-file.upload-dir=uploads/images
-app.base-url=http://localhost:3001
-```
-
-4. Créez le dossier pour les uploads :
+3. Créez le dossier pour les uploads :
 
 ```bash
 mkdir -p uploads/images
