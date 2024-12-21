@@ -9,6 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import com.chatop.chatop.exceptions.BadRequestException;
+import com.chatop.chatop.exceptions.ResourceNotFoundException;
 
 @Service
 public class AuthenticationService {
@@ -29,9 +31,8 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
-        // Vérifier si l'email existe déjà
         if (userRepository.findByEmail(input.getEmail()).isPresent()) {
-            throw new RuntimeException("Email déjà utilisé");
+            throw new BadRequestException("Email déjà utilisé");
         }
 
         User user = new User()
@@ -52,9 +53,9 @@ public class AuthenticationService {
             );
 
             return userRepository.findByEmail(input.getEmail())
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Identifiants invalides", e);
+            throw new BadRequestException("Identifiants invalides");
         }
     }
 }

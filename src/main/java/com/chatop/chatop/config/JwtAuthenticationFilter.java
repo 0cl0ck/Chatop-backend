@@ -16,8 +16,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import io.jsonwebtoken.JwtException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -48,49 +50,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        final String authHeader = request.getHeader("Authorization");
+        
         try {
-            final String authHeader = request.getHeader("Authorization");
-            logger.info("=== Traitement de la requête ===");
-            logger.info("URL appelée: {}", request.getRequestURI());
-            logger.info("Méthode: {}", request.getMethod());
-            logger.info("Auth header présent: {}", authHeader != null);
-
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                logger.warn("Pas de token Bearer dans le header");
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            String jwt = authHeader.substring(7);
-            String userEmail = jwtService.extractUsername(jwt);
-            logger.info("Email extrait du token: {}", userEmail);
+            final String jwt = authHeader.substring(7);
+            final String userEmail = jwtService.extractUsername(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-                logger.info("UserDetails chargé: {}", userDetails.getUsername());
-
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    List<GrantedAuthority> authorities = Collections.singletonList(
-                        new SimpleGrantedAuthority("ROLE_USER")
-                    );
-                    
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        authorities
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.info("Authentification définie dans le SecurityContext avec rôle USER");
                 }
             }
-
-            logger.info("Avant filterChain.doFilter");
             filterChain.doFilter(request, response);
-            logger.info("Après filterChain.doFilter");
+            
+        } catch (JwtException e) {
+            SecurityContextHolder.clearContext();
+            handlerExceptionResolver.resolveException(request, response, null, 
+                new AuthenticationException("Token invalide") {});
+            return;
         } catch (Exception e) {
-            logger.error("Erreur dans le filtre JWT: ", e);
+            SecurityContextHolder.clearContext();
             handlerExceptionResolver.resolveException(request, response, null, e);
+            return;
         }
     }
 }
