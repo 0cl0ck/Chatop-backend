@@ -2,6 +2,7 @@ package com.chatop.chatop.responses;
 
 public class LoginResponse {
     private String token;
+    private String tokenType = "Bearer";
     private long expiresIn;
 
     public String getToken() {
@@ -10,6 +11,15 @@ public class LoginResponse {
 
     public LoginResponse setToken(String token) {
         this.token = token;
+        return this;
+    }
+
+    public String getTokenType() {
+        return tokenType;
+    }
+
+    public LoginResponse setTokenType(String tokenType) {
+        this.tokenType = tokenType;
         return this;
     }
 

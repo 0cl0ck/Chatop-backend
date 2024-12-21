@@ -47,6 +47,7 @@ public class AuthenticationController {
         
         LoginResponse response = new LoginResponse()
                 .setToken(token)
+                .setTokenType("Bearer")
                 .setExpiresIn(jwtService.getExpirationTime());
         
         return ResponseEntity.ok(response);
@@ -66,6 +67,7 @@ public class AuthenticationController {
         
         LoginResponse response = new LoginResponse()
                 .setToken(token)
+                .setTokenType("Bearer")
                 .setExpiresIn(jwtService.getExpirationTime());
         
         return ResponseEntity.ok(response);
