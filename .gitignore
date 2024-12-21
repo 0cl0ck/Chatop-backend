@@ -35,6 +35,7 @@ build/
 # Application properties
 src/main/resources/application.properties
 .env
+src/test/resources/.env.test
 
 # Uploads
 uploads/
