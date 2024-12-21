@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.media.Schema;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,9 @@ public class OpenApiConfig {
             .bearerFormat("JWT")
             .description("Utiliser le token JWT obtenu via /api/auth/login");
 
+        // Définition du requirement de sécurité global
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+
         Schema<?> loginRequestSchema = new Schema<>()
             .type("object");
         Map<String, Schema> loginProperties = new HashMap<>();
@@ -52,6 +56,7 @@ public class OpenApiConfig {
         messageRequestSchema.setProperties(messageProperties);
 
         return new OpenAPI()
+            .addSecurityItem(securityRequirement) // Ajout du requirement global
             .servers(Arrays.asList(
                 new Server().url("http://localhost:" + serverPort)
                     .description("Serveur de développement")
@@ -59,7 +64,11 @@ public class OpenApiConfig {
             .info(new Info()
                 .title("API Chatop")
                 .version("1.0.0")
-                .description("API de mise en relation entre locataires et propriétaires")
+                .description("API de mise en relation entre locataires et propriétaires" +
+                    "\n\nPour tester les endpoints protégés :" +
+                    "\n1. Utilisez d'abord /api/auth/login pour obtenir un token" +
+                    "\n2. Cliquez sur le bouton 'Authorize' en haut de la page" +
+                    "\n3. Entrez votre token dans le format: Bearer <votre_token>")
                 .contact(new Contact()
                     .name("Chatop Support")
                     .email("support@chatop.com"))
