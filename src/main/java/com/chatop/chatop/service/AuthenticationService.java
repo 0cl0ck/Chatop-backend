@@ -32,7 +32,7 @@ public class AuthenticationService {
 
     public User signup(RegisterUserDto input) {
         if (userRepository.findByEmail(input.getEmail()).isPresent()) {
-            throw new BadRequestException("Email déjà utilisé");
+            throw new BadRequestException("Cet email est déjà utilisé");
         }
 
         User user = new User()

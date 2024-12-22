@@ -22,6 +22,7 @@ import java.util.Map;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.validation.Valid;
 
 @Tag(name = "Rentals", description = "API de gestion des locations")
 @RestController
@@ -62,8 +63,7 @@ public class RentalController {
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, String>> createRental(
-            @Parameter(description = "Données de la location")
-            @ModelAttribute CreateRentalDto rentalDto,
+            @Valid @ModelAttribute CreateRentalDto rentalDto,
             Authentication authentication) throws IOException {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

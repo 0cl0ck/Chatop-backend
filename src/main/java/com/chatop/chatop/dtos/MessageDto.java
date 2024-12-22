@@ -1,9 +1,16 @@
 package com.chatop.chatop.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class MessageDto {
-    private Integer user_id;
+    @NotNull(message = "L'ID de la location est obligatoire")
     private Integer rental_id;
+
+    @NotBlank(message = "Le message ne peut pas être vide")
     private String message;
+
+    private Integer user_id;
 
     // Constructeur par défaut
     public MessageDto() {}

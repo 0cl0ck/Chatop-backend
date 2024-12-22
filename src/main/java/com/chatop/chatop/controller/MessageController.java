@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class MessageController {
     })
     @PostMapping
     public ResponseEntity<Map<String, String>> createMessage(
-            @Parameter(description = "Contenu du message") @RequestBody MessageDto messageDto,
+            @Valid @RequestBody MessageDto messageDto,
             Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

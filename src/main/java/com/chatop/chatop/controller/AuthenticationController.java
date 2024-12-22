@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "Authentication", description = "API d'authentification")
 @RequestMapping("/api/auth")
@@ -41,7 +42,7 @@ public class AuthenticationController {
         @ApiResponse(responseCode = "400", description = "Données invalides")
     })
     @PostMapping("/register")
-    public ResponseEntity<LoginResponse> register(@RequestBody RegisterUserDto input) {
+    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterUserDto input) {
         User user = authenticationService.signup(input);
         String token = jwtService.generateToken(user);
         
